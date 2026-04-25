@@ -1,22 +1,26 @@
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# NewsIntel Railway configuration — v5
+# NewsIntel Railway configuration — API service ONLY
 #
-# This file configures the API (backend) service ONLY.
-# The frontend uses Dockerfile.frontend — set that in Railway service settings.
+# This file configures the news-intel-api service.
+# The frontend service uses frontend/railway.toml — set Root Directory to
+# "frontend" in the Railway frontend service settings.
 #
 # Setup:
-#   1. railway login && railway init
-#   2. In Railway dashboard, add a PostgreSQL database (news-intel-db).
-#   3. In the API service, set these environment variables:
-#        DATABASE_URL    = ${{news-intel-db.DATABASE_URL}}   ← Railway reference var
-#        SECRET_KEY      = <run: python -c "import secrets; print(secrets.token_hex(32))">
-#        ALLOWED_ORIGINS = https://your-frontend.railway.app
-#   !! DATABASE_URL must come from the Railway DB reference variable, NOT from
-#      Supabase or any external host. Railway containers cannot reach external
-#      IPv6 PostgreSQL hosts at deploy time.
-#   4. railway up  (deploys the API service)
-#   5. For the frontend service, set "Dockerfile Path" = Dockerfile.frontend
-#      in Railway service settings.
+#   1. API service:
+#      - Root Directory: (leave blank / repo root)
+#      - Set env vars in Railway UI:
+#          DATABASE_URL  = ${{news-intel-db.DATABASE_URL}}
+#          SECRET_KEY    = <python -c "import secrets; print(secrets.token_hex(32))">
+#          ALLOWED_ORIGINS = https://your-frontend.up.railway.app
+#
+#   2. Frontend service:
+#      - Root Directory: frontend
+#      - Railway will auto-read frontend/railway.toml and frontend/Dockerfile
+#      - Set env var: NEWSINTEL_API_URL = https://your-api.up.railway.app
+#
+# IMPORTANT — DATABASE_URL must be the Railway internal reference variable.
+# If it resolves to an empty string the app will warn and fall back to SQLite.
+# Check that the DB service is properly linked in Railway's service settings.
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 [build]

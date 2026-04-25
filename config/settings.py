@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings
+from pydantic import field_validator
 from typing import Optional
 
 
@@ -109,6 +110,30 @@ class Settings(BaseSettings):
     AUTH_MODE: str = "required"
 
     DATABASE_URL: str = "sqlite:///./news_intel.db"
+
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def fix_database_url(cls, v: str) -> str:
+        # If DATABASE_URL is unset or blank (e.g. Railway reference variable didn't
+        # resolve because the service isn't linked yet), fall back to SQLite so the
+        # container at least starts with a clear error rather than a cryptic crash.
+        if not v or not v.strip():
+            import warnings
+            warnings.warn(
+                "DATABASE_URL is empty — falling back to SQLite. "
+                "In Railway: set DATABASE_URL = ${{<db-service-name>.DATABASE_URL}} "
+                "and make sure the DB service is linked to this service.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            return "sqlite:///./news_intel.db"
+
+        # Railway PostgreSQL URLs use the 'postgres://' scheme.
+        # SQLAlchemy 2.x only accepts 'postgresql://' — rewrite it here.
+        if v.startswith("postgres://"):
+            v = "postgresql://" + v[len("postgres://"):]
+
+        return v
 
     NEWSAPI_KEY: Optional[str] = None
     GUARDIAN_API_KEY: Optional[str] = None
