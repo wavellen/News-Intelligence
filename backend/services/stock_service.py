@@ -106,11 +106,11 @@ def fetch_indices(region: str = "global") -> list[dict]:
         # Batch download for efficiency (1 API call)
         data = yf.download(
             tickers,
-            period="2d",
+            period="1d",
             interval="1d",
             progress=False,
             auto_adjust=True,
-            threads=True,
+            threads=False,
         )
 
         for ticker, name, reg, currency in indices:
@@ -125,6 +125,8 @@ def fetch_indices(region: str = "global") -> list[dict]:
                     continue
 
                 current = float(closes.iloc[-1])
+                # Note: with 1d period, we might only have 1 close. 
+                # If so, change is 0. 
                 previous = float(closes.iloc[-2]) if len(closes) >= 2 else current
                 change_pct = ((current - previous) / previous * 100) if previous else 0
 
