@@ -1,6 +1,6 @@
 # API Reference — NewsIntel v5
 
-**Base URL:** `http://localhost:8000` (dev) · `https://your-app.onrender.com` (prod)
+**Base URL:** `http://localhost:8000` (dev) · `https://your-app.up.railway.app` (prod)
 **Interactive docs:** `GET /docs` (Swagger UI) · `GET /redoc` (ReDoc)
 
 ---

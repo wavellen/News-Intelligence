@@ -3,20 +3,19 @@
 #
 # In Railway, set this service's "Root Directory" to:  frontend
 # Railway will then read THIS file instead of the root railway.toml, so the
-# nginx container won't inherit the API's alembic+uvicorn startCommand.
+# frontend service won't inherit the API's alembic+uvicorn startCommand.
 #
 # Required environment variable for this service:
 #   NEWSINTEL_API_URL = https://your-api-service.up.railway.app
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 [build]
-  builder      = "DOCKERFILE"
-  dockerfilePath = "Dockerfile"   # relative to root dir (frontend/)
+  builder = "STATIC"
+  buildCommand = "echo 'Static frontend — no build needed'"
 
 [deploy]
-  # Start nginx, substituting $PORT (Railway injects this at runtime)
-  startCommand       = "/bin/sh -c \"envsubst '$$PORT' < /etc/nginx/conf.d/default.conf > /tmp/nginx.conf && nginx -c /tmp/nginx.conf -g 'daemon off;'\""
-  healthcheckPath    = "/"
+  startCommand    = "npx serve -s . -l $PORT"
+  healthcheckPath = "/"
   healthcheckTimeout = 15
   restartPolicyType  = "ON_FAILURE"
   restartPolicyMaxRetries = 3

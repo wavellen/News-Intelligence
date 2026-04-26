@@ -94,7 +94,7 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     # CORS — comma-separated list of allowed frontend origins
-    # Example: "https://news-intel-frontend.onrender.com,https://localhost:3000"
+    # Example: "https://your-frontend.up.railway.app,https://localhost:3000"
     # Set to "*" ONLY for local dev — never in production
     ALLOWED_ORIGINS: str = "*"
 

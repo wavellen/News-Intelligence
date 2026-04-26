@@ -15,7 +15,7 @@
 #
 #   2. Frontend service:
 #      - Root Directory: frontend
-#      - Railway will auto-read frontend/railway.toml and frontend/Dockerfile
+#      - Railway will auto-read frontend/railway.toml
 #      - Set env var: NEWSINTEL_API_URL = https://your-api.up.railway.app
 #
 # IMPORTANT — DATABASE_URL must be the Railway internal reference variable.
