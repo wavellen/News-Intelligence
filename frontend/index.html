@@ -656,10 +656,13 @@ window.addEventListener('resize', updateLayout);
 // ── INIT ──────────────────────────────────────────────────────────────────────
 (async function init() {
   updateLayout();
-  await loadSummary();
-  await loadArticles();
-  await loadTrending();
-  await loadStocks(S.stockRegion);
+  // Load components in parallel so slow requests (like stocks) don't block others
+  Promise.all([
+    loadSummary(),
+    loadArticles(),
+    loadTrending(),
+    loadStocks(S.stockRegion)
+  ]);
 })();
 </script>
 </body>
