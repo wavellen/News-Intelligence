@@ -11,4 +11,4 @@
 // frontend service, or edit this value directly before deploying.
 // ─────────────────────────────────────────────────────────────────
 
-window.NEWSINTEL_API_URL = '';  // ← set to your Railway API URL, or leave empty if served from backend
+window.NEWSINTEL_API_URL = 'https://news-intel-api-production-edb7.up.railway.app';

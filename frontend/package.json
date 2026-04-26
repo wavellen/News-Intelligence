@@ -1,0 +1,11 @@
+{
+  "name": "news-intel-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "serve": "^14.2.3"
+  },
+  "scripts": {
+    "start": "serve -s . -l $PORT"
+  }
+}

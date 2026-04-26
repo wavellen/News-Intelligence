@@ -318,11 +318,12 @@ header{position:sticky;top:0;z-index:200;height:var(--hh);background:var(--bg);b
 
 <div id="tc"></div>
 
+<script src="config.js"></script>
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────────
 // Change API_BASE to your backend URL when deploying frontend separately
 // e.g. 'https://your-api.up.railway.app'
-var API_BASE = '';
+var API_BASE = window.NEWSINTEL_API_URL || '';
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 var S = { topic: null, bias: 'all', page: 1, totalPages: 1, selectedId: null, stockRegion: 'global' };

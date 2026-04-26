@@ -27,7 +27,7 @@
   builder = "NIXPACKS"
   # Nixpacks reads .python-version → 3.11.9 automatically.
   # spaCy download must use --user so the model is in the user package path.
-  buildCommand = "pip install --prefer-binary -r requirements.txt && python -m spacy download en_core_web_sm --user"
+  buildCommand = "pip install --prefer-binary -r requirements.txt && python -m spacy download en_core_web_sm"
 
 [deploy]
   # Run migrations before starting the server on every deploy.

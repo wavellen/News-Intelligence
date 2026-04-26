@@ -69,7 +69,8 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         if request.url.scheme == "https":
             response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains"
         # Remove server version leakage
-        response.headers.pop("server", None)
+        if "server" in response.headers:
+            del response.headers["server"]
         return response
 
 app.add_middleware(SecurityHeadersMiddleware)
