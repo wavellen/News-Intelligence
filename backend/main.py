@@ -320,14 +320,18 @@ def _trigger_initial_fetch():
     from backend.core.database import SessionLocal
     from backend.models.article import Article
     db = SessionLocal()
+    # Trigger if DB is empty OR if there are unprocessed articles (ensures data is ready)
     try:
         count = db.query(Article).count()
-        if count == 0:
-            logger.info("Database empty — triggering initial news ingestion")
+        unprocessed = db.query(Article).filter(Article.is_processed == False).count()
+        
+        if count == 0 or unprocessed > 0:
+            logger.info("Triggering initial fetch/process (count=%d, unprocessed=%d)", count, unprocessed)
             from backend.core.scheduler import _ingest_job, _process_job, _stock_refresh_job
             import threading
             def run_init():
-                _ingest_job()
+                if count == 0:
+                    _ingest_job()
                 _process_job()
                 _stock_refresh_job()
             threading.Thread(target=run_init, daemon=True).start()
