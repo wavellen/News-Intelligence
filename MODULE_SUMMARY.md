@@ -172,6 +172,6 @@ Apply all: `alembic upgrade head`
 | Test modules | 12 |
 | Alembic migrations | 5 |
 | Documentation files | 5 |
-| Deployment configs | 6 |
+| Deployment configs | 1 |
 | Syntax errors | 0 |
 | Failing tests | 0 |

@@ -13,54 +13,32 @@ No build step, no npm, no bundler required.
 
 This is the default setup — nothing extra needed. The frontend and API share the same domain so there are no CORS issues and `API_BASE = ''` works as-is.
 
-**Access:** `https://your-app.onrender.com/dashboard`
+**Access:** `https://your-app.railway.app/dashboard`
 
 ---
 
-### Option B: Render static site (separate subdomain)
+### Option B: Separate Railway service
 
-This is what `render.yaml` configures. The static site is hosted at a different domain from the API.
+1. Create a new service in your Railway project
+2. Set **Root Directory** to `frontend`
+3. Railway auto-reads `frontend/railway.toml`
+4. Set env var: `NEWSINTEL_API_URL = https://your-api.railway.app`
 
 **Required changes to `frontend/index.html`:**
 
-Find line ~10 in the `<script>` block:
+Find line ~325 in the `<script>` block:
 ```js
 var API_BASE = '';
 ```
 
 Change it to your API URL:
 ```js
-var API_BASE = 'https://news-intel-api.onrender.com';
+var API_BASE = 'https://your-api.railway.app';
 ```
 
-Also update `render.yaml` `ALLOWED_ORIGINS`:
-```yaml
-- key: ALLOWED_ORIGINS
-  value: "https://news-intel-frontend.onrender.com"
-```
-
----
-
-### Option C: Netlify / Vercel
-
-1. Set `API_BASE` in `index.html` to your backend URL
-2. Upload `frontend/` folder to Netlify or Vercel
-3. No build settings needed — it's a static file
-
-**Netlify `_redirects` file** (already included in `frontend/`):
-```
-/*    /index.html    200
-```
-
----
-
-### Option D: Local dev (nginx)
-
-The `docker-compose.yml` includes an nginx container that serves the frontend on port 3000:
-
+Also set `ALLOWED_ORIGINS` on the API service:
 ```bash
-docker-compose up -d frontend
-open http://localhost:3000
+railway variables set ALLOWED_ORIGINS=https://your-frontend.railway.app
 ```
 
 ---
@@ -152,10 +130,10 @@ If the frontend is on a different domain, set `ALLOWED_ORIGINS` in the API envir
 
 ```bash
 # Single origin
-ALLOWED_ORIGINS=https://news-intel-frontend.onrender.com
+railway variables set ALLOWED_ORIGINS=https://your-frontend.railway.app
 
 # Multiple origins (comma-separated, no spaces)
-ALLOWED_ORIGINS=https://news-intel-frontend.onrender.com,https://yourdomain.com
+railway variables set ALLOWED_ORIGINS=https://your-frontend.railway.app,https://yourdomain.com
 ```
 
 **Never use `*` in production** — it allows any website to call your API with credentials.
@@ -167,20 +145,6 @@ ALLOWED_ORIGINS=https://news-intel-frontend.onrender.com,https://yourdomain.com
 | Deployment scenario | `API_BASE` value |
 |--------------------|-----------------|
 | API and frontend same domain | `''` (empty string) |
-| Render separate static site | `'https://news-intel-api.onrender.com'` |
-| Fly.io | `'https://news-intel.fly.dev'` |
-| Local Docker (from host) | `'http://localhost:8000'` |
+| Railway separate service | `'https://your-api.railway.app'` |
+| Local development | `'http://localhost:8000'` |
 | Production custom domain | `'https://api.yourdomain.com'` |
-
----
-
-## Static asset caching
-
-The `render.yaml` and nginx config set:
-
-```
-Cache-Control: public, max-age=3600    # 1 hour for all assets
-Cache-Control: no-store               # for index.html specifically
-```
-
-`index.html` is never cached so users always get the latest version. Since the dashboard, CSS, and JS are all in the one file, this also ensures script updates are always picked up.

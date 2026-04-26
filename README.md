@@ -102,29 +102,6 @@ open http://localhost:8000/docs
 
 ---
 
-## Docker (full stack)
-
-```bash
-# Copy and edit environment
-cp .env.example .env
-# Edit SECRET_KEY, INITIAL_ADMIN_EMAIL, INITIAL_ADMIN_PASSWORD
-
-# Start API + PostgreSQL + frontend nginx
-docker-compose up -d
-
-# Tail logs
-docker-compose logs -f api
-
-# Stop everything
-docker-compose down
-```
-
-Access points:
-- API: `http://localhost:8000`
-- Dashboard: `http://localhost:8000/dashboard`
-- Docs: `http://localhost:8000/docs`
-- Frontend: `http://localhost:3000`
-
 ---
 
 ## API Overview
@@ -173,11 +150,7 @@ news-intel/
 │   └── index.html  Self-contained responsive dashboard
 ├── docs/           API.md, DATABASE.md, DEPLOYMENT.md, TECHNICAL_DOCUMENTATION.md
 ├── .env.example
-├── render.yaml     Render Blueprint
-├── fly.toml        Fly.io config
-├── railway.toml    Railway config
-├── Dockerfile      Multi-stage, non-root
-└── docker-compose.yml
+└── railway.toml    Railway deployment config
 ```
 
 ---
@@ -201,15 +174,15 @@ Test suites: bias_detector (65), security (40+), cache_and_limits (49), fact_eng
 
 ---
 
-## Deployment
+## Deployment (Railway)
 
-See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for step-by-step guides for Render, Fly.io, Railway, and Docker.
+See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for the full guide.
 
-**TL;DR — Render (easiest):**
-1. Push to GitHub
-2. Render Dashboard → Blueprints → connect repo → Apply
-3. Set `INITIAL_ADMIN_EMAIL` + `INITIAL_ADMIN_PASSWORD` in environment
-4. Visit `https://your-app.onrender.com/docs`
+**TL;DR:**
+1. `railway init` → `railway add --plugin postgresql`
+2. Set `SECRET_KEY`, `ALLOWED_ORIGINS`, `INITIAL_ADMIN_EMAIL`, `INITIAL_ADMIN_PASSWORD`
+3. `railway up`
+4. Visit `https://your-app.railway.app/docs`
 
 ---
 
