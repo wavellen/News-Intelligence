@@ -12,3 +12,4 @@
 // ─────────────────────────────────────────────────────────────────
 
 window.NEWSINTEL_API_URL = 'https://news-intel-api-production-edb7.up.railway.app';
+window.NEWSINTEL_API_KEY = ''; // Add your nip_... API key here if AUTH_MODE is enabled

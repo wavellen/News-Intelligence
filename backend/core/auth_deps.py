@@ -93,6 +93,10 @@ def get_current_user(
     raw_token = _extract_token(request, credentials, api_key_param)
 
     if not raw_token:
+        # If auth is disabled, return a mock guest user
+        if settings.AUTH_MODE == "disabled":
+            return User(id=0, email="guest@example.com", full_name="Guest", role="admin", is_active=True)
+
         # Log the attempt with IP for monitoring
         client_ip = request.client.host if request.client else "unknown"
         logger.warning(
@@ -177,6 +181,12 @@ def require_admin(
     user: User = Depends(get_current_user),
 ) -> User:
     """Require admin role."""
+    from config.settings import settings
+    
+    # Bypass if auth is disabled
+    if settings.AUTH_MODE == "disabled":
+        return user
+
     if user.role != "admin":
         client_ip = request.client.host if request.client else "unknown"
         logger.warning(

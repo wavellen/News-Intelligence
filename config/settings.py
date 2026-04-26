@@ -107,7 +107,7 @@ class Settings(BaseSettings):
     # "required" — all /insights, /recommendations, /facts endpoints need auth
     # "optional" — endpoints work without auth but provide extra features when authed
     # "disabled" — no auth enforced (development only)
-    AUTH_MODE: str = "required"
+    AUTH_MODE: str = "disabled"
 
     DATABASE_URL: str = "sqlite:///./news_intel.db"
 

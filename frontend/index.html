@@ -362,14 +362,18 @@ function sentColor(v) {
 // ── API ───────────────────────────────────────────────────────────────────────
 async function apiFetch(path) {
   try {
-    var r = await fetch(API_BASE + path);
+    var headers = {};
+    if (window.NEWSINTEL_API_KEY) headers['X-API-Key'] = window.NEWSINTEL_API_KEY;
+    var r = await fetch(API_BASE + path, { headers: headers });
     if (!r.ok) { console.warn('API ' + r.status, path); return null; }
     return await r.json();
   } catch(e) { console.error('fetch', path, e); return null; }
 }
 async function apiPost(path) {
   try {
-    var r = await fetch(API_BASE + path, {method:'POST'});
+    var headers = {};
+    if (window.NEWSINTEL_API_KEY) headers['X-API-Key'] = window.NEWSINTEL_API_KEY;
+    var r = await fetch(API_BASE + path, {method:'POST', headers: headers});
     if (!r.ok) { console.warn('POST ' + r.status, path); return null; }
     return await r.json();
   } catch(e) { console.error('post', path, e); return null; }
