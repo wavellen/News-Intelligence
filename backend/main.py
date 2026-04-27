@@ -265,8 +265,51 @@ def _seed_admin_user():
 
 
 # ── Safe global exception handler ────────────────────────────────────────────
-from fastapi.responses import JSONResponse
-from fastapi.exceptions import RequestValidationError
+from fastapi import HTTPException
+from fastapi.responses import HTMLResponse, JSONResponse
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request, exc):
+    """Custom handler for HTTP errors (404, 403, etc) with clean HTML fallback."""
+    accept = request.headers.get("accept", "")
+    
+    # Return HTML if browser-like client
+    if "text/html" in accept:
+        icon = "🔒" if exc.status_code in (401, 403) else "🔍"
+        title = "Access Denied" if exc.status_code in (401, 403) else "Page Not Found"
+        msg = exc.detail
+        
+        html = f"""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>{exc.status_code} | NewsIntel</title>
+            <style>
+                body {{ background: #0a0a0c; color: #e1e1e6; font-family: 'Inter', system-ui, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }}
+                .card {{ text-align: center; background: #141417; padding: 3rem; border-radius: 1.5rem; border: 1px solid #2a2a2e; box-shadow: 0 20px 40px rgba(0,0,0,0.4); max-width: 400px; }}
+                .icon {{ font-size: 5rem; margin-bottom: 1.5rem; display: block; }}
+                h1 {{ font-size: 1.5rem; font-weight: 700; margin: 0 0 1rem; color: #fff; }}
+                p {{ color: #a1a1aa; font-size: 0.95rem; line-height: 1.6; margin: 0 0 2rem; }}
+                .btn {{ background: #c29d5f; color: #000; padding: 0.8rem 1.5rem; border-radius: 0.6rem; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: transform 0.2s; display: inline-block; }}
+                .btn:hover {{ transform: translateY(-2px); }}
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                <span class="icon">{icon}</span>
+                <h1>{title}</h1>
+                <p>{msg}</p>
+                <a href="/" class="btn">Back to Home</a>
+            </div>
+        </body>
+        </html>
+        """
+        return HTMLResponse(content=html, status_code=exc.status_code)
+    
+    # Fallback to JSON
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
 @app.exception_handler(Exception)
 async def generic_exception_handler(request, exc):

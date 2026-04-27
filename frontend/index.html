@@ -241,8 +241,8 @@ header{position:sticky;top:0;z-index:200;height:var(--hh);background:var(--bg);b
   </div>
   <div class="hdr-right">
     <span class="dot-wrap"><span class="dot"></span><span id="statusTxt">Live</span></span>
-    <button class="btn p" id="refreshBtn" onclick="triggerPipeline()">↻ Refresh</button>
-    <a href="/docs" target="_blank" class="btn" id="docsBtn">API Docs</a>
+    <button class="btn p" id="refreshBtn" onclick="triggerPipeline()" style="display:none">↻ Refresh</button>
+    <a href="#" target="_blank" class="btn" id="docsBtn">API Docs</a>
     <button class="btn" id="authBtn" onclick="handleAuth()">Login</button>
   </div>
 </header>
@@ -376,8 +376,9 @@ function sentColor(v) {
 
 // ── API ───────────────────────────────────────────────────────────────────────
 var S = { 
-  topic: null, bias: null, page: 1, totalPages: 1, 
+  topic: null, bias: 'all', page: 1, totalPages: 1, 
   token: localStorage.getItem('ni_token'),
+  user: null,
   authMode: 'login'
 };
 
@@ -729,6 +730,8 @@ async function submitAuth() {
   if (data && data.access_token) {
     S.token = data.access_token;
     localStorage.setItem('ni_token', S.token);
+    // Fetch profile to get role
+    S.user = await apiFetch('/auth/me');
     closeAuth();
     updateAuthBtn();
     toast('Welcome back!', 'ok');
@@ -746,8 +749,18 @@ function logout() {
 }
 function updateAuthBtn() {
   var btn = document.getElementById('authBtn');
+  var rBtn = document.getElementById('refreshBtn');
+  var dBtn = document.getElementById('docsBtn');
+  
   btn.textContent = S.token ? 'Logout' : 'Login';
   btn.classList.toggle('p', !!S.token);
+  
+  // Role based visibility
+  var role = S.user ? S.user.role : null;
+  rBtn.style.display = (role === 'admin') ? 'inline-flex' : 'none';
+  
+  // Fix Docs link
+  dBtn.href = (window.API_BASE || '') + '/docs';
 }
 
 // ── LAYOUT ────────────────────────────────────────────────────────────────────
@@ -761,6 +774,9 @@ window.addEventListener('resize', updateLayout);
 // ── INIT ──────────────────────────────────────────────────────────────────────
 (async function init() {
   updateLayout();
+  if (S.token && !S.user) {
+    S.user = await apiFetch('/auth/me');
+  }
   updateAuthBtn();
   // Load components in parallel so slow requests (like stocks) don't block others
   Promise.all([
