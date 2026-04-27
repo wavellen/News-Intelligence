@@ -266,6 +266,7 @@ def _seed_admin_user():
 
 # ── Safe global exception handler ────────────────────────────────────────────
 from fastapi import HTTPException
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
