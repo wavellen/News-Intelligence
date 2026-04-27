@@ -532,7 +532,7 @@ async function loadArticles() {
 
   var url = '/articles?page=' + S.page + '&page_size=15';
   if (S.topic) url += '&topic=' + encodeURIComponent(S.topic);
-  if (S.bias !== 'all') url += '&bias_label=' + encodeURIComponent(S.bias);
+  if (S.bias && S.bias !== 'all') url += '&bias_label=' + encodeURIComponent(S.bias);
 
   var data = await apiFetch(url);
   if (!data) { list.innerHTML = '<div class="empty"><p>Could not load articles.<br>Check API connection.</p></div>'; return; }
