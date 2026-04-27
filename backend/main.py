@@ -413,6 +413,12 @@ async def shutdown():
 
 
 
+# ── Healthcheck route ────────────────────────────────────────────────────────
+@app.get("/health", tags=["system"])
+async def health_check():
+    """Healthcheck endpoint for Railway deployment."""
+    return {"status": "ok", "version": "5.0.0"}
+
 # ── Catch-all route for custom 404 HTML ──────────────────────────────────────
 @app.api_route("/{path_name:path}", include_in_schema=False)
 async def catch_all(request: Request, path_name: str):
