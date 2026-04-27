@@ -233,26 +233,31 @@ def _seed_admin_user():
     from sqlalchemy.orm import Session as _S
     from backend.models.user import User as _U
     from backend.core.security import hash_password
-    db = None
     try:
-        db = engine.connect()
-        from sqlalchemy import text as _t
-        count = db.execute(_t("SELECT COUNT(*) FROM users")).scalar()
-        if count == 0:
-            from backend.core.database import SessionLocal
-            session = SessionLocal()
-            try:
+        from backend.core.database import SessionLocal
+        session = SessionLocal()
+        try:
+            email = settings.INITIAL_ADMIN_EMAIL.strip().lower()
+            admin = session.query(_U).filter(_U.email == email).first()
+            
+            if not admin:
+                # Create new admin
                 admin = _U(
-                    email=settings.INITIAL_ADMIN_EMAIL,
+                    email=email,
                     hashed_password=hash_password(settings.INITIAL_ADMIN_PASSWORD),
                     role="admin",
                     is_active=True,
                 )
                 session.add(admin)
                 session.commit()
-                logger.info("Seeded initial admin user: %s", settings.INITIAL_ADMIN_EMAIL)
-            finally:
-                session.close()
+                logger.info("Seeded new admin user: %s", email)
+            elif admin.role != "admin":
+                # Promote existing user to admin
+                admin.role = "admin"
+                session.commit()
+                logger.info("Promoted existing user to admin: %s", email)
+        finally:
+            session.close()
     except Exception as e:
         logger.warning("Admin seed skipped: %s", e)
     finally:
