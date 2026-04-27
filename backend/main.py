@@ -260,8 +260,6 @@ def _seed_admin_user():
             session.close()
     except Exception as e:
         logger.warning("Admin seed skipped: %s", e)
-    finally:
-        if db: db.close()
 
 
 # ── Safe global exception handler ────────────────────────────────────────────
