@@ -411,6 +411,46 @@ async def shutdown():
     logger.info("Shutting down...")
 
 
+
+# ── Catch-all route for custom 404 HTML ──────────────────────────────────────
+@app.api_route("/{path_name:path}", include_in_schema=False)
+async def catch_all(request: Request, path_name: str):
+    """Last-resort handler for 404s to ensure browser-friendly HTML responses."""
+    accept = request.headers.get("accept", "")
+    
+    if "text/html" in accept:
+        html = f"""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>404 | NewsIntel</title>
+            <style>
+                body {{ background: #0a0a0c; color: #e1e1e6; font-family: 'Inter', system-ui, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }}
+                .card {{ text-align: center; background: #141417; padding: 3rem; border-radius: 1.5rem; border: 1px solid #2a2a2e; box-shadow: 0 20px 40px rgba(0,0,0,0.4); max-width: 400px; width: 90%; }}
+                .icon {{ font-size: 5rem; margin-bottom: 1.5rem; display: block; }}
+                h1 {{ font-size: 1.5rem; font-weight: 700; margin: 0 0 1rem; color: #fff; }}
+                p {{ color: #a1a1aa; font-size: 0.95rem; line-height: 1.6; margin: 0 0 2rem; }}
+                .btn {{ background: #c29d5f; color: #000; padding: 0.8rem 1.5rem; border-radius: 0.6rem; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: transform 0.2s; display: inline-block; }}
+                .btn:hover {{ transform: translateY(-2px); }}
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                <span class="icon">🔍</span>
+                <h1>Page Not Found</h1>
+                <p>The requested resource '/{path_name}' could not be found.</p>
+                <a href="/" class="btn">Back to Home</a>
+            </div>
+        </body>
+        </html>
+        """
+        return HTMLResponse(content=html, status_code=404)
+    
+    return JSONResponse(status_code=404, content={"detail": "Not Found"})
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, reload=True)
