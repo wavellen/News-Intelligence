@@ -432,7 +432,7 @@ async function submitAuth() {
     closeAuth();
     updateAuthBtn();
     toast('Welcome back!', 'ok');
-    init(); // Refresh data
+    setTimeout(function(){ window.location.reload(); }, 500);
   } else if (data && data.error === 'api_error') {
     var msg = data.detail;
     if (data.errors && data.errors.length) {
@@ -450,7 +450,7 @@ function logout() {
   localStorage.removeItem('ni_token');
   updateAuthBtn();
   toast('Logged out successfully', 'info');
-  init();
+  setTimeout(function(){ window.location.reload(); }, 500);
 }
 function updateAuthBtn() {
   var btn = document.getElementById('authBtn');
