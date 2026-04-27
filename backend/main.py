@@ -268,6 +268,9 @@ def _seed_admin_user():
 from fastapi import HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
 
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
+@app.exception_handler(StarletteHTTPException)
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
     """Custom handler for HTTP errors (404, 403, etc) with clean HTML fallback."""
@@ -275,9 +278,15 @@ async def http_exception_handler(request, exc):
     
     # Return HTML if browser-like client
     if "text/html" in accept:
-        icon = "🔒" if exc.status_code in (401, 403) else "🔍"
-        title = "Access Denied" if exc.status_code in (401, 403) else "Page Not Found"
-        msg = exc.detail
+        # Determine icon/title based on status
+        if exc.status_code == 404:
+            icon, title = "🔍", "Page Not Found"
+        elif exc.status_code in (401, 403):
+            icon, title = "🔒", "Access Denied"
+        else:
+            icon, title = "⚠️", f"Error {exc.status_code}"
+            
+        msg = getattr(exc, "detail", "The requested resource could not be found.")
         
         html = f"""
         <!DOCTYPE html>
@@ -288,7 +297,7 @@ async def http_exception_handler(request, exc):
             <title>{exc.status_code} | NewsIntel</title>
             <style>
                 body {{ background: #0a0a0c; color: #e1e1e6; font-family: 'Inter', system-ui, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }}
-                .card {{ text-align: center; background: #141417; padding: 3rem; border-radius: 1.5rem; border: 1px solid #2a2a2e; box-shadow: 0 20px 40px rgba(0,0,0,0.4); max-width: 400px; }}
+                .card {{ text-align: center; background: #141417; padding: 3rem; border-radius: 1.5rem; border: 1px solid #2a2a2e; box-shadow: 0 20px 40px rgba(0,0,0,0.4); max-width: 400px; width: 90%; }}
                 .icon {{ font-size: 5rem; margin-bottom: 1.5rem; display: block; }}
                 h1 {{ font-size: 1.5rem; font-weight: 700; margin: 0 0 1rem; color: #fff; }}
                 p {{ color: #a1a1aa; font-size: 0.95rem; line-height: 1.6; margin: 0 0 2rem; }}
@@ -309,7 +318,7 @@ async def http_exception_handler(request, exc):
         return HTMLResponse(content=html, status_code=exc.status_code)
     
     # Fallback to JSON
-    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+    return JSONResponse(status_code=exc.status_code, content={"detail": getattr(exc, "detail", "Not Found")})
 
 @app.exception_handler(Exception)
 async def generic_exception_handler(request, exc):
