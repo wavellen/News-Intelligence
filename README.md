@@ -4,6 +4,18 @@
 
 A production-ready news aggregation platform that ingests 35+ global RSS feeds, applies NLP-based topic classification, political bias detection, and sentiment analysis — then surfaces insights via a REST API and a responsive dashboard.
 
+The platform was designed to aggregate and process news data from multiple sources in real time while reducing ingestion latency and improving throughput.
+
+The backend architecture uses FastAPI, asynchronous ingestion workflows, PostgreSQL, Redis-based caching strategies, and NLP pipelines for content analysis.
+
+The system processes incoming news streams concurrently, extracts meaningful insights, and exposes them through scalable APIs.
+
+The primary focus of the project was understanding scalable ingestion architectures, concurrent processing workflows, and operational bottlenecks in data-intensive backend systems.
+
+---
+## 💭 Key Engineering Concepts
+• Real-time source aggregation • Async ingestion workflows • Concurrent processing pipelines • NLP entity extraction • News clustering • Bias detection workflows • Recommendation systems • Analytics pipelines • API authentication • Rate limiting • Caching strategies • Secure API design
+
 ---
 
 ## ✨ What's new in v5
